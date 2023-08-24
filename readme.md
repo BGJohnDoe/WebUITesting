@@ -1,13 +1,15 @@
-##TestNG
+## TestNG
+
 https://testng.org/doc/documentation-main.html
-####For run:
+
+#### For run:
     mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
 
-##Selenium 
+## Selenium 
 
 https://www.selenium.dev/
 
-##Allure
+## Allure
 https://docs.qameta.io/allure/
 #### 1. Install
     mvn allure:install

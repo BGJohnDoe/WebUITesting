@@ -1,3 +1,38 @@
+##TestNG
+https://testng.org/doc/documentation-main.html
+####For run:
+    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
+
+##Selenium 
+
+https://www.selenium.dev/
+
+##Allure
+https://docs.qameta.io/allure/
+#### 1. Install
+    mvn allure:install
+Change PATH env additionally
+#### 2. Run
+    allure serve allure-results
+
+or
+
+    .allure\allure-2.12.0\bin\allure.bat serve allure-results
+
+if PATH is still not configured 
+
+----
+
+### Useful links
+
+https://demoqa.com/checkbox
+
+http://uitestingplayground.com/
+
+https://www.online-toolz.com/tool/xpath-tester
+
+----
+
 # Useful hotkeys
 
 **Search/find everywhere (tab go to sections)** SHIFT x 2  
@@ -126,22 +161,3 @@
     ctrl + shift + left/right arrow :: change the size of active window/panel
 
 ----
-
-##TestNG
-https://testng.org/doc/documentation-main.html
-####For run:
-    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
-
-##Allure
-https://docs.qameta.io/allure/
-#### 1. Install
-    mvn allure:install
-Change PATH env additionally
-#### 2. Run
-    allure serve allure-results
-
-or
-
-    .allure\allure-2.12.0\bin\allure.bat serve allure-results
-
-if PATH is still not configured 

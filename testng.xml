@@ -1,0 +1,43 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="AllTests" verbose="1" >
+	<test name="BAT" >
+		<classes>
+			<class name="TestNGProbe.MyTest">
+				<methods>
+					<exclude name="myFirstTest"/><!--All methods will included by default if omit-->
+				</methods>
+			</class>
+
+
+		</classes>
+	</test>
+
+	<test name="Sanity">
+		<packages>
+			<package name="TestNGProbe"/>
+		</packages>
+	</test>
+	
+	<test name="Regression">
+		<groups>
+			<run>
+				<include name="hello"/>
+			</run>
+		</groups>
+		<classes>
+			<class name="TestNGProbe.MyTest"> <!--The same, here you can include and exclude methods in this tag-->
+				<methods>
+					<exclude name="myFirstTest"/>
+				</methods>
+			</class>
+
+		</classes>
+	</test>
+
+	<test name="Disabled for a while" enabled="false">
+		<packages>
+			<package name=".*"/>
+		</packages>
+	</test>
+</suite>

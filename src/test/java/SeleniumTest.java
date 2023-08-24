@@ -1,62 +1,92 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.Attachment;
+import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
 
 public class SeleniumTest {
-	@Test
-	public void properConnect() {
-		WebDriverManager.chromedriver().setup();
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("remote-allow-origins=*");
-		WebDriver driver = new ChromeDriver(options);
-		driver.get("https://yandex.ru");
-		driver.quit();
-	}
+    private WebDriver driver;
+    private WebDriverWait wait;
 
-	@Test
-	public void simpleConnect() {
-		WebDriver driver = new ChromeDriver();
-		driver.get("https://yandex.ru");
-		driver.quit();
-		WebElement element = driver.findElement(By.xpath("//button[text()='Найти']"));
-		element.click();
+    @BeforeClass
+    private void init() {
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("remote-allow-origins=*");
+        driver = new ChromeDriver(options);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    }
 
-	}
+    @AfterClass
+    private void tearDown() {
+        driver.quit();
+    }
 
-	@Test(description = "Will failed due to captcha")
-	public void connectAndSearch() {
-		WebDriverManager.chromedriver().setup();
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("remote-allow-origins=*");
-		WebDriver driver = new ChromeDriver(options);
-		driver.get("https://yandex.ru");
-		closeCaptcha(driver);
-		WebElement element = driver.findElement(By.xpath("//button[text()='Найти']"));
-		element.click();
-		driver.quit();
-	}
 
-	private void closeCaptcha(WebDriver driver){
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		String captcha = "//input[@aria-labelledby='smartcaptcha-status']";
-			wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(captcha)));
-			driver.findElement(By.xpath(captcha)).click();
-			//so, what will we do now?
-	}
+    @Test
+    public void properConnect() {
+        connect("https://example.org");
+    }
 
-	@Test
-	public void connectWithWebDriverManager() {
-		WebDriverManager.chromedriver().setup();
-		WebDriver driver = new ChromeDriver(new ChromeOptions());
-		driver.get("https://yandex.ru");
-		driver.quit();
-	}
+    private void connect(String url) {
+        driver.get(url);
+    }
+
+    @Test
+    public void simpleConnect() {
+        connect("https://yandex.ru");
+        driver.findElement(By.xpath("//button[text()='Найти']")).click();
+
+    }
+
+    @Test(description = "Will failed due to captcha")
+    public void connectAndSearch() {
+        connect("https://yandex.ru");
+        closeCaptcha(driver);
+        driver.findElement(By.xpath("//button[text()='Найти']")).click();
+    }
+
+    @Step
+    @Description("close captcha attempt")
+    private void closeCaptcha(WebDriver driver) {
+        String captcha = "//input[@aria-labelledby='smartcaptcha-status']";
+        waitUntil(By.xpath(captcha));
+        driver.findElement(By.xpath(captcha)).click();
+        driver.manage().window().maximize();
+        //so, what will we do now?
+    }
+
+    @AfterMethod(description = "Completion of test")
+    protected void testFailure(ITestResult result) {
+        if (!result.isSuccess()) //что не так?
+            attachScreenshot(driver);
+    }
+
+    @Attachment(value = "Screenshot", type = "image/png")
+    public static byte[] attachScreenshot(WebDriver driver) {
+        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+    }
+
+    private void waitUntil(By xpath) {
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(xpath));
+    }
+
+    @Test
+    public void connectWithWebDriverManager() {
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver(new ChromeOptions());
+        driver.get("https://yandex.ru");
+    }
 
 }

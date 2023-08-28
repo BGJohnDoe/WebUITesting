@@ -1,12 +1,13 @@
 package Atlas;
 
 import io.qameta.atlas.webdriver.AtlasWebElement;
+import io.qameta.atlas.webdriver.WebPage;
 import io.qameta.atlas.webdriver.extension.FindBy;
 import io.qameta.atlas.webdriver.extension.Name;
-import org.openqa.selenium.*;
+
 
 @SuppressWarnings("rawtypes")
-public interface MainPage extends WrapsDriver, SearchContext {
+public interface MainPage extends WebPage {
 	@Name("Username input")
 	@FindBy("//*[@id='userName']")
 	AtlasWebElement usernameInput();
@@ -25,5 +26,5 @@ public interface MainPage extends WrapsDriver, SearchContext {
 
 	@Name("submit button")
 	@FindBy("//*[@id='submit']")
-	WebElement submitButton();
+	AtlasWebElement submitButton();
 }

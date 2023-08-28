@@ -6,6 +6,7 @@ import io.qameta.atlas.core.Atlas;
 import io.qameta.atlas.webdriver.WebDriverConfiguration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.yandex.qatools.matchers.webdriver.DisplayedMatcher;
 
 public class BaseSteps {
 	protected final WebDriver driver;
@@ -45,5 +46,10 @@ public class BaseSteps {
 	@Step("Press submit button")
 	public void pressSubmit() {
 		mainPage.submitButton().click();
+	}
+
+	@Step("Check that submit button is displayed")
+	public void checkSubmitDisplayed(){
+		mainPage.submitButton().should("Submit is displayed", DisplayedMatcher.displayed(), 10);
 	}
 }

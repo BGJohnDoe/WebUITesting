@@ -7,15 +7,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
 
 public class AtlasTest {
 	private BaseSteps steps;
-
 	private WebDriver driver;
 	private WebDriverWait wait;
 
@@ -29,20 +28,15 @@ public class AtlasTest {
 		steps = new BaseSteps(driver);
 	}
 
-	private void waitUntil(By by) {
-		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
-	}
-
 	@Test
 	public void textBoxTest() {
 		String name = "Igor";
 		String email = "bgjdoe@gmail.com";
 		String currentAddress = "current address";
 		String permanentAddress = "permanent address";
-		By submit = By.id("submit");
 
 		driver.get("https://demoqa.com/text-box");
-		waitUntil(submit);
+		steps.checkSubmitDisplayed();
 
 		steps.inputUserName(name);
 		steps.inputUserEmail(email);
@@ -51,11 +45,13 @@ public class AtlasTest {
 		steps.pressSubmit();
 
 		//TODO: let's make it  bit clear?
-		Assert.assertEquals(driver.findElement(By.id("name")).getText().split(":")[1], name);
-		Assert.assertEquals(driver.findElement(By.id("email")).getText().split(":")[1], email);
-		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='currentAddress']")).getText().split(":")[1],
+		SoftAssert sa = new SoftAssert();
+		sa.assertEquals(driver.findElement(By.id("name")).getText().split(":")[1], name);
+		sa.assertEquals(driver.findElement(By.id("email")).getText().split(":")[1], email+"897789");
+		sa.assertEquals(driver.findElement(By.xpath("//p[@id='currentAddress']")).getText().split(":")[1],
 			currentAddress);
-		Assert.assertEquals(driver.findElement(By.xpath("//p[@id='permanentAddress']")).getText().split(":")[1],
+		sa.assertEquals(driver.findElement(By.xpath("//p[@id='permanentAddress']")).getText().split(":")[1],
 			permanentAddress);
+		sa.assertAll();
 	}
 }

@@ -7,7 +7,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -15,6 +14,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
+
+import static org.testng.Assert.assertEquals;
 
 public class SeleniumTest {
     private WebDriver driver;
@@ -107,12 +108,14 @@ public class SeleniumTest {
         driver.findElement(By.id("permanentAddress")).sendKeys(permanentAddress);
         driver.findElement(submit).click();
 
-        Assert.assertEquals(driver.findElement(By.id("name")).getText().split(":")[1], name);
-        Assert.assertEquals(driver.findElement(By.id("email")).getText().split(":")[1], email);
-        Assert.assertEquals(driver.findElement(By.xpath("//p[@id='currentAddress']")).getText().split(":")[1],
-            currentAddress);
-        Assert.assertEquals(driver.findElement(By.xpath("//p[@id='permanentAddress']")).getText().split(":")[1],
-            permanentAddress);
+        assertEquals(getText(By.id("name")), name);
+        assertEquals(getText(By.id("email")), email);
+        assertEquals(getText(By.xpath("//p[@id='currentAddress']")), currentAddress);
+        assertEquals(getText(By.xpath("//p[@id='permanentAddress']")), permanentAddress);
+    }
+
+    private String getText(By name) {
+        return driver.findElement(name).getText().split(":")[1];
     }
 
 }

@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -78,8 +79,8 @@ public class SeleniumTest {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
     }
 
-    private void waitUntil(By xpath) {
-        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(xpath));
+    private void waitUntil(By by) {
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
     }
 
     @Test
@@ -87,6 +88,31 @@ public class SeleniumTest {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver(new ChromeOptions());
         driver.get("https://yandex.ru");
+    }
+
+    @Test
+    public void textBoxTest() {
+        String name = "Igor";
+        String email = "bgjdoe@gmail.com";
+        String currentAddress = "current address";
+        String permanentAddress = "permanent address";
+        By submit = By.id("submit");
+
+        driver.get("https://demoqa.com/text-box");
+        waitUntil(submit);
+
+        driver.findElement(By.id("userName")).sendKeys(name);
+        driver.findElement(By.id("userEmail")).sendKeys(email);
+        driver.findElement(By.id("currentAddress")).sendKeys(currentAddress);
+        driver.findElement(By.id("permanentAddress")).sendKeys(permanentAddress);
+        driver.findElement(submit).click();
+
+        Assert.assertEquals(driver.findElement(By.id("name")).getText().split(":")[1], name);
+        Assert.assertEquals(driver.findElement(By.id("email")).getText().split(":")[1], email);
+        Assert.assertEquals(driver.findElement(By.xpath("//p[@id='currentAddress']")).getText().split(":")[1],
+            currentAddress);
+        Assert.assertEquals(driver.findElement(By.xpath("//p[@id='permanentAddress']")).getText().split(":")[1],
+            permanentAddress);
     }
 
 }

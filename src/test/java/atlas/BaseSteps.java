@@ -1,4 +1,4 @@
-package Atlas;
+package atlas;
 
 import io.qameta.atlas.webdriver.extension.Param;
 import io.qameta.allure.Step;

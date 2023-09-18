@@ -8,7 +8,7 @@
 					<exclude name="myFirstTest"/><!--All methods will included by default if omit-->
 				</methods>
 			</class>
-			<class name="SeleniumTest"/>
+			<class name="Selenium.SeleniumTest"/>
 
 
 		</classes>

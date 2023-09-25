@@ -45,12 +45,16 @@ public class AtlasTest {
 
 		//TODO: let's make it  bit clear?
 		SoftAssert sa = new SoftAssert();
-		sa.assertEquals(driver.findElement(By.id("name")).getText().split(":")[1], name);
-		sa.assertEquals(driver.findElement(By.id("email")).getText().split(":")[1], email+"897789");
-		sa.assertEquals(driver.findElement(By.xpath("//p[@id='currentAddress']")).getText().split(":")[1],
+		sa.assertEquals(getName(By.id("name")), name);
+		sa.assertEquals(getName(By.id("email")), email+"897789");
+		sa.assertEquals(getName(By.xpath("//p[@id='currentAddress']")),
 			currentAddress);
-		sa.assertEquals(driver.findElement(By.xpath("//p[@id='permanentAddress']")).getText().split(":")[1],
+		sa.assertEquals(getName(By.xpath("//p[@id='permanentAddress']")),
 			permanentAddress);
 		sa.assertAll();
+	}
+
+	private String getName(By name) {
+		return driver.findElement(name).getText().split(":")[1];
 	}
 }

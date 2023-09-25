@@ -74,7 +74,6 @@ public class SeleniumTest {
 			.setCurrentAddress(currentAddress)
 			.setPermanentAddress(permanentAddress)
 			.clickSubmit();
-		page.init(driver);
 
 		new Steps(page, new Output(driver))
 			.checkUserName(name)

@@ -1,20 +1,10 @@
 import java.sql.*;
 public class DBConnection {
-	private final static String URL = "jdbc:postgresql://qatrain1.prosp.devexperts.com/qatrain";
-	private final static String USER = "qatrain_core";
-	private final static String PASSWORD = "qatrain_core";
-	public static final String QUERY = "select\n"
-									   + "\te.first_name,\n"
-									   + "\te.last_name,\n"
-									   + "\td.department_name,\n"
-									   + "\tl.city,\n"
-									   + "\tl.state_province\n"
-									   + "from\n"
-									   + "\temployees e\n"
-									   + "join departments d on\n"
-									   + "\te.department_id = d.department_id\n"
-									   + "join locations l on\n"
-									   + "\tl.location_id = d.location_id;";
+	private final static String URL = "jdbc:postgresql://localhost/postgres";
+	private final static String USER = "postgres";
+	private final static String PASSWORD = "admin";
+	public static final String QUERY = "select \te.first_name," +
+			"\n\te.last_name,\n\td.department_name,\n\tl.city,\n\tl.state_province\nfrom\n\temployees e\njoin departments d on\n\te.department_id = d.department_id\njoin locations l on\n\tl.location_id = d.location_id;";
 
 	public static void connectAndFetch() {
 		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);

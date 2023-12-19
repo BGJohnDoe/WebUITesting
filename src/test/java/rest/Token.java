@@ -9,4 +9,7 @@ import lombok.*;
 @Setter
 class Token {
 	String token;
+	String expires;
+	String status;
+	String result;
 }

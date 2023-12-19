@@ -47,6 +47,7 @@
 			<class name="rest.Rest">
 				<methods>
 					<include name="registerUser"/>
+					<include name="generateToken"/>
 					<include name="login"/>
 					<include name="getProfile"/>
 				</methods>

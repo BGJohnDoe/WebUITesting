@@ -2,17 +2,20 @@ package rest;
 
 import io.restassured.http.ContentType;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.hc.core5.http.HttpStatus;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 public class Rest {
 
+	private final HashMap<String, String> userData = createUserData();
 	private UserResponse response;
-	private RegisteredUsesResponse newUser;
+	private Token token;
 
 	@Test
 	public void checkBook() {
@@ -29,7 +32,7 @@ public class Rest {
 
 	@Test
 	public void checkAllBooks() {
-		var resonse =(
+		var response = (
 			given()
 				.when()
 				.log().all()
@@ -43,7 +46,7 @@ public class Rest {
 				.extract()
 				.response()
 		);
-		System.out.println(resonse.jsonPath().get("books.title").toString());
+		System.out.println(response.jsonPath().get("books.title").toString());
 	}
 
 	@Test
@@ -68,7 +71,7 @@ public class Rest {
 	}
 
 	@Test
-	public void queryParamsTest(){
+	public void queryParamsTest() {
 		given()
 			.queryParam("text", "someText")
 			.when()
@@ -79,57 +82,60 @@ public class Rest {
 	}
 
 	@Test
-	public void pathParameterTest(){
+	public void pathParameterTest() {
 		given()
 			.pathParam("UUID", "c66189e1-908c-47ce-bdac-cb90574cb67a")
-		.when()
+			.when()
 			.log().all()
 			.get("https://demoqa.com/Account/v1/User/{UUID}")
-		.then()
+			.then()
 			.log().all()
 			.assertThat()
 			.statusCode(401);
 	}
 
 	@Test
-	public void authentication(){
+	public void authentication() {
 		given()
 			.auth()
 			.preemptive()
 			.basic("user", "Pa$$w0rd")
-		.when()
+			.log().all()
+			.when()
 			.get("https://demoqa.com/Account/v1/Authorized")
-		.then()
+			.then()
+			.log().all()
 			.assertThat()
 			.statusCode(200);
 	}
 
 	@Test
-	public void oAuthAuthentication(){
+	public void oAuthAuthentication() {
 		given()
 			.auth()
-			.oauth2("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6InVzZXIiLCJwYXNzd29yZCI6IlBhJCR3MHJkIiwiaWF0IjoxNjk1MDQ4NDkyfQ.UWVHkB2qTdnYQKQaqbV4Acq7iZNkhDyHDogK9fVcoOM")
-		.when()
+			.oauth2(
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+				+ ".eyJ1c2VyTmFtZSI6InVzZXIiLCJwYXNzd29yZCI6IlBhJCR3MHJkIiwiaWF0IjoxNjk1MDQ4NDkyfQ"
+				+ ".UWVHkB2qTdnYQKQaqbV4Acq7iZNkhDyHDogK9fVcoOM")
+			.log().all()
+			.when()
 			.get("https://demoqa.com/Account/v1/Authorized")
-		.then()
+			.then()
+			.log().all()
 			.assertThat()
 			.statusCode(200);
 	}
 
 	@Test
-	public void login(){
-		HashMap<String, String> user = new HashMap<>();
-		user.put("userName", newUser.username);
-		user.put("password", "Pa$$w0rd");
-
+	public void login() {
 		response = given()
 			.contentType(ContentType.JSON)
-			.body(user)
+			.body(userData)
 			.log().all()
-		.when()
+			.when()
 			.log().all()
 			.post("https://demoqa.com/Account/v1/Login")
-		.then()
+			.then()
 			.assertThat()
 			.statusCode(200)
 			.extract()
@@ -138,13 +144,14 @@ public class Rest {
 	}
 
 	@Test
-	public void getProfile(){
+	public void getProfile() {
 		given()
 			.log().all()
-			.contentType(ContentType.JSON)
-			.baseUri("https://demoqa.com/Account/v1")
+			.baseUri("https://demoqa.com/Account/v1/User")
 			.pathParam("UUID", response.getUserId())
-			.cookie("token", response.getToken())
+			.contentType(ContentType.JSON)
+			.auth()
+			.oauth2(response.token)
 			.when()
 			.get("/{UUID}")
 			.then()
@@ -154,15 +161,11 @@ public class Rest {
 	}
 
 	@Test
-	public void registerUser(){
-		HashMap<String, String> user = new HashMap<>();
-		user.put("userName", "user" + RandomStringUtils.random(5, true, true));
-		user.put("password", "Pa$$w0rd");
-
-		newUser = given()
+	public void registerUser() {
+		RegisteredUsesResponse newUser = given()
 			.log().all()
 			.contentType(ContentType.JSON)
-			.body(user)
+			.body(userData)
 			.when()
 			.post("https://demoqa.com/Account/v1/User")
 			.then()
@@ -175,26 +178,48 @@ public class Rest {
 		System.out.println(newUser);
 	}
 
-	@Test
-	public void testAuth(){
+	private HashMap<String, String> createUserData() {
+		HashMap<String, String> user = new HashMap<>();
+		user.put("userName", "user" + RandomStringUtils.random(5, true, true));
+		user.put("password", "Pa$$w0rd");
+		return user;
+	}
+
+	@Test(enabled = false)
+	public void testAuth() {
 		HashMap<String, String> user = new HashMap<>();
 		user.put("username", "admin");
 		user.put("password", "password123");
 		System.out.println(
-		given()
-			.contentType(ContentType.JSON)
-			.baseUri("https://restful-booker.herokuapp.com")
-			.body(user)
+			given()
+				.contentType(ContentType.JSON)
+				.baseUri("https://restful-booker.herokuapp.com")
+				.body(user)
 //			.body("{\"username\": \"admin\", \"password\": \"password123\"}")
-		.when()
+				.when()
+				.log().all()
+				.post("/auth")
+				.then()
+				.log().all()
+				.assertThat()
+				.statusCode(200)
+				.extract()
+				.as(Token.class).getToken());
+//			.path("token").toString());
+	}
+
+	@Test
+	public void generateToken() {
+		token = given()
 			.log().all()
-			.post("/auth")
-		.then()
+			.contentType(ContentType.JSON)
+			.body(userData)
+			.post("https://demoqa.com/Account/v1/GenerateToken")
+			.then()
 			.log().all()
 			.assertThat()
-			.statusCode(200)
+			.statusCode(HttpStatus.SC_OK)
 			.extract()
-			.as(Token.class).getToken());
-//			.path("token").toString());
+			.as(Token.class);
 	}
 }
